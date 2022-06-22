@@ -15,7 +15,18 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          cache: maven  
+          cache: maven
       - name: Code Build & Test
+        id: build
         working-directory: ./nms
         run: mvn clean package
+      - name: Publish result
+        if: always()
+        run: |
+          echo "Status: ${{steps.build.outcome}}"
+          echo "Status2: ${{steps.build.conclusion}}"
+          
+  analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello world!
