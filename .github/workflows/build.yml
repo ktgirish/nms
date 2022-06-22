@@ -31,6 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
@@ -40,7 +42,7 @@ jobs:
       - name: Static Code Analysis
         id: analysis
         working-directory: ./nms
-        run: mvn verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.organization=ktgirish -Dsonar.login=${{secrets.SONAR_TOKEN}}
+        run: mvn verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.organization=ktgirish -Dsonar.projectKey=nms-github-actions -Dsonar.login=${{secrets.SONAR_TOKEN}}
       - name: Publish result
         if: always()
         run: |
