@@ -27,6 +27,7 @@ jobs:
           echo "Status2: ${{steps.build.conclusion}}"
           
   analysis:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - run: echo hello world!
