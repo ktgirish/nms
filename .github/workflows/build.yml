@@ -22,8 +22,9 @@ jobs:
       - name: Code Build & Test
         id: build
         working-directory: ./nms
-        run: mvn clean package
-        run: | 
+        #run: mvn clean package
+        run: |
+          mvn clean package
           echo "1 - ${{env.GITHUB_RUN_ID}}"
           echo "2 - $GITHUB_RUN_ID"
       - name: Caching Dockerfile & the war file
