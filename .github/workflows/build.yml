@@ -5,7 +5,7 @@ on:
       - master
 
 env:
-  GITHUB_RUN_ID: $GITHUB_RUN_ID
+  GR_ID: $GITHUB_RUN_ID
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
         #run: mvn clean package
         run: |
           mvn clean package
-          echo "1 - ${{env.GITHUB_RUN_ID}}"
+          echo "1 - ${{env.GR_ID}}"
           echo "2 - $GITHUB_RUN_ID"
           echo "3 - ${{github.run.id}}"
       - name: Caching Dockerfile & the war file
@@ -34,7 +34,8 @@ jobs:
           path: |
             nms/Dockerfile
             nms/target/nms*.war
-          key: ${{env.GITHUB_RUN_ID}}-docker-and-war
+          key: ${{env.GR_ID}}-docker-and-war
+          restore-keys: ${{env.GR_ID}}-docker-and-war
       - name: Publish result
         if: always()
         run: |
@@ -70,16 +71,17 @@ jobs:
     needs: analysis
     runs-on: ubuntu-latest
     steps:
-      - name: Restoring Dockerfile & the war file
+      - name: Caching Dockerfile & the war file
         uses: actions/cache@v1
         with:
           path: |
             nms/Dockerfile
             nms/target/nms*.war
-          key: ${{env.GITHUB_RUN_ID}}-docker-and-war
+          key: ${{env.GR_ID}}-docker-and-war
+          restore-keys: ${{env.GR_ID}}-docker-and-war
       - name: validating files
         run: |
-          echo "1 - ${{env.GITHUB_RUN_ID}}"
+          echo "1 - ${{env.GR_ID}}"
           echo "2 - $GITHUB_RUN_ID"
           cat nms/Dockerfile
           ls -lrt nms/target
