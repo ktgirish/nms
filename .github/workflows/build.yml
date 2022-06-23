@@ -57,7 +57,7 @@ jobs:
           echo "Status: ${{steps.analysis.outcome}}"
           echo "Status2: ${{steps.analysis.conclusion}}"
           
-   artifact_management:
+  artifact_management:
     needs: analysis
     runs-on: ubuntu-latest
     steps:
