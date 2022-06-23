@@ -27,13 +27,14 @@ jobs:
           mvn clean package
           echo "1 - ${{env.GITHUB_RUN_ID}}"
           echo "2 - $GITHUB_RUN_ID"
+          echo "3 - ${{github.run.id}}"
       - name: Caching Dockerfile & the war file
         uses: actions/cache@v1
         with:
-          key: ${{env.GITHUB_RUN_ID}}-docker-and-war
           path: |
             nms/Dockerfile
             nms/target/nms*.war
+          key: ${{env.GITHUB_RUN_ID}}-docker-and-war
       - name: Publish result
         if: always()
         run: |
@@ -72,10 +73,10 @@ jobs:
       - name: Restoring Dockerfile & the war file
         uses: actions/cache@v1
         with:
-          key: ${{env.GITHUB_RUN_ID}}-docker-and-war
           path: |
             nms/Dockerfile
             nms/target/nms*.war
+          key: ${{env.GITHUB_RUN_ID}}-docker-and-war
       - name: validating files
         run: |
           echo "1 - ${{env.GITHUB_RUN_ID}}"
