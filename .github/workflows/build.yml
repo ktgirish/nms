@@ -20,6 +20,13 @@ jobs:
         id: build
         working-directory: ./nms
         run: mvn clean package
+      - name: Caching Dockerfile & the war file
+        uses: actions/cache@v3
+        with:
+          key: docker_and_war
+          path: |
+            nms/Dockerfile
+            nms/target/nms*.war
       - name: Publish result
         if: always()
         run: |
@@ -34,12 +41,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Sonar cache
-        uses: actions/cache@v1
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
@@ -49,9 +50,25 @@ jobs:
       - name: Static Code Analysis
         id: analysis
         working-directory: ./nms
-        run: mvn verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.organization=ktgirish -Dsonar.projectKey=nms-github-actions -Dsonar.login=${{secrets.SONAR_TOKEN}}
+        #run: mvn verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.organization=ktgirish -Dsonar.projectKey=nms-github-actions -Dsonar.login=${{secrets.SONAR_TOKEN}}
       - name: Publish result
         if: always()
         run: |
           echo "Status: ${{steps.analysis.outcome}}"
           echo "Status2: ${{steps.analysis.conclusion}}"
+          
+   artifact_management:
+    needs: analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restoring Dockerfile & the war file
+        uses: actions/cache@v3
+        with:
+          key: docker_and_war
+          path: |
+            nms/Dockerfile
+            nms/target/nms*.war
+      - name: validating files
+        run: |
+          cat nms/Dockerfile
+          ls -lrt nms/target
