@@ -23,7 +23,7 @@ jobs:
       - name: Caching Dockerfile & the war file
         uses: actions/cache@v3
         with:
-          key: docker_and_war_${{GITHUB_RUN_ID}}
+          key: docker_and_war_$GITHUB_RUN_ID
           path: |
             nms/Dockerfile
             nms/target/nms*.war
@@ -65,7 +65,7 @@ jobs:
       - name: Restoring Dockerfile & the war file
         uses: actions/cache@v3
         with:
-          key: docker_and_war_${{GITHUB_RUN_ID}}
+          key: docker_and_war_$GITHUB_RUN_ID
           path: |
             nms/Dockerfile
             nms/target/nms*.war
