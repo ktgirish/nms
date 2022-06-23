@@ -28,7 +28,7 @@ jobs:
           echo "1 - ${{env.GITHUB_RUN_ID}}"
           echo "2 - $GITHUB_RUN_ID"
       - name: Caching Dockerfile & the war file
-        uses: actions/cache@v3
+        uses: actions/cache@v1
         with:
           key: ${{env.GITHUB_RUN_ID}}-docker-and-war
           path: |
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Restoring Dockerfile & the war file
-        uses: actions/cache@v3
+        uses: actions/cache@v1
         with:
           key: ${{env.GITHUB_RUN_ID}}-docker-and-war
           path: |
