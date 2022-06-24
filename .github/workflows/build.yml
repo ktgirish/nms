@@ -69,7 +69,7 @@ jobs:
           echo "Status2: ${{steps.analysis.conclusion}}"
           
   artifact_management:
-    needs: analysis
+    needs: [build, analysis]
     runs-on: ubuntu-latest
     steps:
       #- name: Downloading Dockerfile & war
