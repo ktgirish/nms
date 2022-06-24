@@ -4,8 +4,8 @@ on:
     branches:
       - master
 
-env:
-  GR_ID: $GITHUB_RUN_ID
+#env:
+#  GR_ID: $GITHUB_RUN_ID
 
 jobs:
   build:
@@ -22,20 +22,15 @@ jobs:
       - name: Code Build & Test
         id: build
         working-directory: ./nms
-        #run: mvn clean package
-        run: |
-          mvn clean package
-          echo "1 - ${{env.GR_ID}}"
-          echo "2 - $GITHUB_RUN_ID"
-          echo "3 - ${{github.run.id}}"
-      - name: Caching Dockerfile & the war file
-        uses: actions/cache@v1
+        run: mvn clean package
+      - name: Uploading Dockerfile & war
+        uses: actions/upload-artifact@v3
         with:
+          name: dockerfile-and-war
           path: |
             nms/Dockerfile
             nms/target/nms*.war
-          key: ${{env.GR_ID}}-docker-and-war
-          restore-keys: ${{env.GR_ID}}-docker-and-war
+          retention-days: 1
       - name: Publish result
         if: always()
         run: |
@@ -60,7 +55,7 @@ jobs:
         id: analysis
         working-directory: ./nms
         run: echo hello
-        #run: mvn verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.organization=ktgirish -Dsonar.projectKey=nms-github-actions -Dsonar.login=${{secrets.SONAR_TOKEN}}
+        run: mvn verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.organization=ktgirish -Dsonar.projectKey=nms-github-actions -Dsonar.login=${{secrets.SONAR_TOKEN}}
       - name: Publish result
         if: always()
         run: |
@@ -71,17 +66,11 @@ jobs:
     needs: analysis
     runs-on: ubuntu-latest
     steps:
-      - name: Caching Dockerfile & the war file
-        uses: actions/cache@v1
+      - name: Downloading Dockerfile & war
+        uses: actions/download-artifact@v2
         with:
-          path: |
-            nms/Dockerfile
-            nms/target/nms*.war
-          key: ${{env.GR_ID}}-docker-and-war
-          restore-keys: ${{env.GR_ID}}-docker-and-war
+          name: dockerfile-and-war
       - name: validating files
         run: |
-          echo "1 - ${{env.GR_ID}}"
-          echo "2 - $GITHUB_RUN_ID"
           cat nms/Dockerfile
-          ls -lrt nms/target
+          ls -lrt nms/target 
