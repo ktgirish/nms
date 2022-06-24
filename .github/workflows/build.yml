@@ -4,8 +4,10 @@ on:
     branches:
       - master
 
-#env:
-#  GR_ID: $GITHUB_RUN_ID
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  BUILD_DISPLAY_NAME: nms.0.$GITHUB_RUN_NUMBER
 
 jobs:
   build:
@@ -70,7 +72,16 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dockerfile-and-war
-      - name: validating files
-        run: |
-          cat Dockerfile
-          ls -lrt target 
+      - name: Login to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and Push Docer image to Registry
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BUILD_DISPLAY_NAME }}
+      
