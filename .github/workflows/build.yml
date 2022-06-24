@@ -36,9 +36,7 @@ jobs:
       - name: Setting Environment Variables
         id: variables_adopt
         run: |
-          echo "${GITHUB_RUN_NUMBER}"
-          echo "nms.0.${{ github.run_number }}"
-          echo "::set-output name=num::${{ github.run_number }}"
+          echo "::set-output name=num::nms.0.${{ github.run_number }}"
       - name: Publish result
         if: always()
         run: |
@@ -90,5 +88,5 @@ jobs:
       #    context: .
       #    push: true
       #    tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ needs.build.outputs.version }}
-      - run: echo "${{ needs.build.outputs.buildNumber }}"
+      - run: echo ${{ needs.build.outputs.buildNumber }}
       
