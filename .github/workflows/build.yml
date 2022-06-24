@@ -44,8 +44,6 @@ jobs:
         run: |
           echo "Status: ${{steps.build.outcome}}"
           echo "Status2: ${{steps.build.conclusion}}"
-    outputs:
-      buildNumber: ${{ steps.variables_adopt.num }}
           
   analysis:
     needs: build
