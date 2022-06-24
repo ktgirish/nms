@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.variables_adopt.BUILD_DISPLAY_NAME }}
+      buildNumber: ${{ steps.variables_adopt.num }}
     steps:
       - name: Code Checkout
         uses: actions/checkout@v3
@@ -37,7 +37,7 @@ jobs:
       - name: Setting Environment Variables
         id: variables_adopt
         run: |
-          echo "::set-output name=BUILD_DISPLAY_NAME::$GITHUB_RUN_NUMBER"
+          echo "::set-output name=num::$GITHUB_RUN_NUMBER"
       - name: Publish result
         if: always()
         run: |
@@ -89,5 +89,5 @@ jobs:
       #    context: .
       #    push: true
       #    tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ needs.build.outputs.version }}
-      - run: echo ${{ needs.build.outputs.version }}
+      - run: echo "${{ needs.build.outputs.buildNumber }}"
       
