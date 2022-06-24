@@ -11,6 +11,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: steps.variables_adopt.BUILD_DISPLAY_NAME
     steps:
       - name: Code Checkout
         uses: actions/checkout@v3
@@ -86,5 +88,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ jobs.build.steps.variables_adopt.BUILD_DISPLAY_NAME }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ needs.build.outputs.version }}
       
