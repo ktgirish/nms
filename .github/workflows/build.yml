@@ -6,7 +6,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: 
 
 jobs:
   build:
@@ -35,6 +34,7 @@ jobs:
       - name: Setting Environment Variables
         id: variables_adopt
         run: |
+          echo "$GITHUB_RUN_NUMBER"
           echo "::set-output name=num::$GITHUB_RUN_NUMBER"
       - name: Publish result
         if: always()
