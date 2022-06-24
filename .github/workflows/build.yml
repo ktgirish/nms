@@ -71,5 +71,4 @@ jobs:
           name: dockerfile-and-war
       - name: validating files
         run: |
-          cat nms/Dockerfile
-          ls -lrt nms/target 
+          ls -lrt
