@@ -108,7 +108,8 @@ jobs:
         uses: Azure/aci-deploy@v1
         with:
           resource-group: ${{ env.ACI_RESOURCE_GROUP }}
-          dns-name-label: nms-dev.eastus.azurecontainer.io
+          dns-name-label: nms-dev
           image: ${{ env.REGISTRY }}/${{ github.repository }}:${{ needs.build.outputs.buildNumber }}
           name: nms-dev
+          ports: 8080
           location: 'east us'
