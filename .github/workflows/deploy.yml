@@ -26,6 +26,7 @@ jobs:
       - name: Setting ACI DNS Name variable
         id: dns_name
         run: |
+          echo "${{ fromJson(inputs.appsWithVersions).nms }}"
           if [ ${{ inputs.environment}} == 'UAT' ]; then
             echo "::set-output name=dns::nms-uat"
           elif [ ${{ inputs.environment}} == 'SIT' ]; then
