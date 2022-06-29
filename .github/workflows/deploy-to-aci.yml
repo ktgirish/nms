@@ -51,7 +51,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.azure_credentials }}
-      - name: Dev Deployment
+      - name: Deployment
         uses: Azure/aci-deploy@v1
         with:
           resource-group: ${{ inputs.aci_resource_group }}

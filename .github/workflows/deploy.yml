@@ -50,7 +50,7 @@ jobs:
       registry: ghcr.io
       registry_username: ${{ github.actor }}
       aci_resource_group: github-actions-aci
-      aci_name: nms
+      aci_name: nms-uat
       aci_dns_name: ${{ needs.setting_aci_dns_name.outputs.aci_dns_name }}
       aci_location: 'east us'
       image: ghcr.io/${{ github.repository }}

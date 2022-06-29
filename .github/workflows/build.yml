@@ -1,9 +1,9 @@
 name: CI
 on:
-  workflow_dispatch:
-  #push:
-  #  branches:
-  #    - master
+  #workflow_dispatch:
+  push:
+    branches:
+      - master
 
 env:
   REGISTRY: ghcr.io
@@ -112,5 +112,5 @@ jobs:
           dns-name-label: nms-dev
           image: ${{ env.REGISTRY }}/${{ github.repository }}:${{ needs.build.outputs.buildNumber }}
           name: nms-dev
-          ports: 8080
+          ports: 80
           location: 'east us'
