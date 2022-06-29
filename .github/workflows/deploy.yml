@@ -3,25 +3,18 @@ name: CD
 on:
   workflow_dispatch:
     inputs:
-      nms:
-        description: 'NMS-Build number to deploy'
+      environment:
+        description: 'Target environment to deploy'
         type: string
-        required: false
-      appB:
-        description: 'AppB-Build number to deploy'
+        required: true
+      appsWithVersions:
+        description: 'Applications with Versions'
         type: string
-        required: false
-      appC:
-        description: 'AppC-Build number to deploy'
-        type: string
-        required: false
+        required: true
 #Respective projects to be added further to get the version number to release       
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        value: ${{ inputs }}
     steps:
       - name: Testing
-        run: echo ${{ matrix.value }}
+        run: echo ${{ fromJson(inputs.appsWithVersions) }}
