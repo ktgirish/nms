@@ -36,10 +36,9 @@ jobs:
   
   test:
     needs: [setting_aci_dns_name]
-    if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ needs.setting_aci_dns_name.status }}"
+      - run: echo "${{ toJSON(needs.setting_aci_dns_name) }}"
 
   #deploy_nms:
   #  if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
