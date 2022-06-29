@@ -19,5 +19,6 @@ jobs:
       - name: Testing
         #if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
         run: |
+          echo ${{ inputs }}
           echo ${{ fromJson(inputs.appsWithVersions) }}
           echo ${{ fromJson(inputs.appsWithVersions).nms }}
