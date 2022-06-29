@@ -1,0 +1,62 @@
+name: Reusable automated deployment template
+on:
+  workflow_call:
+    inputs:
+      registry:
+        required: true
+        type: string
+      registry_username:
+        required: true
+        type: string
+      aci_resource_group:
+        required: true
+        type: string
+      aci_name:
+        required: true
+        type: string
+      aci_dns_name:
+        required: true
+        type: string
+      aci_location:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
+      port:
+        required: false
+        type: string
+        default: '80'
+    secrets:
+      registry_password:
+        required: true
+      azure_credentials:
+        required: true
+      
+jobs:
+  deployment_to_aci:
+    name: Deployment of a container to Azure ACI.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ inputs.registry_username }}
+          password: ${{ secrets.registry_password }}
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.azure_credentials }}
+      - name: Dev Deployment
+        uses: Azure/aci-deploy@v1
+        with:
+          resource-group: ${{ inputs.aci_resource_group }}
+          dns-name-label: ${{ inputs.aci_dns_name }}
+          image: ${{ inputs.registry }}/${{ inputs.image }}:${{ inputs.image_tag }}
+          name: ${{ inputs.aci_name }}
+          ports: ${{ inputs.port }}
+          location: ${{ inputs.aci_location }}
