@@ -26,7 +26,7 @@ jobs:
       - name: Setting ACI DNS Name variable
         id: dns_name
         run: |
-          echo "${{ fromJson(inputs.appsWithVersions).nms }}"
+          echo "::set-output name=version::${{ fromJson(inputs.appsWithVersions).nms }}"
           if [ ${{ inputs.environment}} == 'UAT' ]; then
             echo "::set-output name=dns::nms-uat"
           elif [ ${{ inputs.environment}} == 'SIT' ]; then
@@ -37,6 +37,7 @@ jobs:
           fi
     outputs:
       aci_dns_name: ${{ steps.dns_name.outputs.dns }}
+      release_version: ${{ steps.dns_name.outputs.version }}
 
   deploy_nms:
     needs: [setting_aci_dns_name]
@@ -53,4 +54,4 @@ jobs:
       aci_dns_name: ${{ needs.setting_aci_dns_name.outputs.aci_dns_name }}
       aci_location: 'east us'
       image: ghcr.io/${{ github.repository }}
-      image_tag: ${{ fromJson(inputs.appsWithVersions).nms }}
+      image_tag: ${{ needs.setting_aci_dns_name.outputs.release_version }}
