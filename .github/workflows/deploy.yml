@@ -25,9 +25,9 @@ jobs:
     steps:
       - name: Testing
         run: |
-          if [${{ inputs.environment == 'UAT'}}]; then
+          if (( ${{ inputs.environment == 'UAT'}} )) then
             echo "UAT"
-          elif [${{ inputs.environment == 'SIT'}}]; then
+          elif (( ${{ inputs.environment == 'SIT'}} )) then
             echo "SIT"
           else
             echo "Environment not defined"
