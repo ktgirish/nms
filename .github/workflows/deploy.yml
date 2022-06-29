@@ -23,22 +23,25 @@ jobs:
   setting_aci_dns_name:
     runs-on: ubuntu-latest
     steps:
-      - name: Testing
+      - name: Setting ACI DNS Name variable
+        id: dns_name
         run: |
           if [ ${{ inputs.environment}} == 'UAT' ]; then
-            echo "UAT"
+            echo "::set-output name=dns::nms-uat"
           elif [ ${{ inputs.environment}} == 'SIT' ]; then
-            echo "SIT"
+            echo "::set-output name=dns::nms-sit"
           else
             echo "Environment not defined"
             exit 1
           fi
-  
+    outputs:
+      aci_dns_name: ${{ steps.dns_name.outputs.dns }}
+      
   test:
     needs: [setting_aci_dns_name]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ toJSON(needs.setting_aci_dns_name) }}"
+      - run: ${{ needs.setting_aci_dns_name.outputs.aci_dns_name }}
 
   #deploy_nms:
   #  if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
