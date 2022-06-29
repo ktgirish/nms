@@ -36,6 +36,7 @@ jobs:
   
   test:
     needs: [setting_aci_dns_name]
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - run: echo "${{ needs.setting_aci_dns_name.status }}"
