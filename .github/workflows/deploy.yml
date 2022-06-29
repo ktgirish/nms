@@ -11,13 +11,47 @@ on:
         description: 'Applications with Versions'
         type: string
         required: true
+        
+env:
+  REGISTRY: ghcr.io
+  ACI_RESOURCE_GROUP: github-actions-aci
+  ACI_NAME: nms
+  ACI_LOCATION: 'east us'
+  
 #Respective projects to be added further to get the version number to release       
 jobs:
-  deploy:
+  setting_aci_dns_name:
     runs-on: ubuntu-latest
     steps:
       - name: Testing
-        if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
         run: |
-          echo ${{ fromJson(inputs.appsWithVersions).nms }}
-          
+          if ["${{ inputs.environment == 'UAT'}}"]; then
+            echo "UAT"
+          elif ["${{ inputs.environment == 'SIT'}}"]; then
+            echo "SIT"
+          else
+            echo "Environment not defined"
+            exit 1
+          fi
+  
+  test:
+    needs: [setting_aci_dns_name]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${{ needs.setting_aci_dns_name.status }}"
+
+  #deploy_nms:
+  #  if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
+  #  uses: ./.github/workflows/deploy-to-aci.yml
+  #  secrets:
+  #    registry_password: ${{ secrets.GITHUB_TOKEN }}
+  #    azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+  #  with:
+  #    registry: ${{ env.REGISTRY }}
+  #    registry_username: ${{ github.actor }}
+  #    aci_resource_group: ${{ env.ACI_RESOURCE_GROUP }}
+  #    aci_name: ${{ env.ACI_NAME }}
+  #    aci_dns_name:
+  #    aci_location: ${{ env.LOCATION }}
+  #    image:
+  #    image_tag:
