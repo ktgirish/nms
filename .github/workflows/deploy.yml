@@ -17,10 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Testing
-        #if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
+        if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
         run: |
-          echo ${{ fromJson(inputs.appsWithVersions) }}
           echo ${{ fromJson(inputs.appsWithVersions).nms }}
-          echo ${{ toJson(inputs) }}
-          echo ${{ toJson(inputs.appsWithVersions) }}
-          echo ${{ toJson(inputs.appsWithVersions).nms }}
+          
