@@ -20,4 +20,4 @@ jobs:
         #if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
         run: |
           echo ${{ fromJson(inputs.appsWithVersions) }}
-          echo ${{ fromJson(inputs.appsWithVersions.nms) }}
+          echo ${{ fromJson(inputs.appsWithVersions).nms }}
