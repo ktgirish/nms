@@ -45,9 +45,9 @@ jobs:
       registry_password: ${{ secrets.GITHUB_TOKEN }}
       azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
     with:
-      registry: ${{ env.REGISTRY }}
+      registry: ghcr.io
       registry_username: ${{ github.actor }}
-      aci_resource_group: ${{ env.ACI_RESOURCE_GROUP }}
+      aci_resource_group: github-actions-aci
       aci_name: ${{ env.ACI_NAME }}
       aci_dns_name: ${{ needs.setting_aci_dns_name.outputs.aci_dns_name }}
       aci_location: ${{ env.ACI_LOCATION }}
