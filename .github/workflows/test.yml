@@ -19,13 +19,12 @@ jobs:
           echo "${{ steps.build.outcome == 'success' }}"
           echo "${{ steps.analysis.outcome == 'success' }}"
       
-  #test_d:
-  #  needs: [test_a,test_b,test_c]
-  #  if: always()
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - run: |
-  #        echo b
-  #        echo ${{ needs.test_a.result }}
-  #        echo ${{ needs.test_b.result }}
-  #        echo ${{ needs.test_c.result }}
+  test_d:
+    needs: [test_a]
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+      - if: always()
+        run: |
+          echo b
+          echo ${{ needs.test_a.result }}
