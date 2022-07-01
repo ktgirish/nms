@@ -46,10 +46,16 @@ jobs:
         run: |
           echo "::set-output name=buildNumber::nms-gh.0.${{ github.run_number }}"
           echo "::set-output name=buildURL::$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo "${{ steps.build.outputs.buildStartDate }}"
+          echo "${{ steps.end.outputs.buildEndDate }}"
           startTime=$(date -d "${{ steps.build.outputs.buildStartDate }}" +%s)
           endTime=$(date -d "${{ steps.end.outputs.buildEndDate }}" +%s)
+          echo $startTime
+          echo $endTime
           diffSeconds=$(($endTime-$startTime))
+          echo $diffSeconds
           diffTime=$(date -d @${diffSeconds} +"%H:%M:%S" -u)
+          echo $diffTime
           echo "::set-output name=buildDuration::$diffTime"
           echo "::set-output name=buildStatus::${{ steps.build.outcome == 'success' }}"
       - name: Sending build feedback to ADOPT
