@@ -1,13 +1,15 @@
 name: CI
 on:
-  workflow_dispatch:
-  #push:
-  #  branches:
-  #    - master
+  #workflow_dispatch:
+  push:
+    branches:
+      - master
 
 env:
   REGISTRY: ghcr.io
   ACI_RESOURCE_GROUP: github-actions-aci
+  ADOPT_SERVICES_URL: http://20.25.98.153:8888/adopt-services
+  ADOPT_PROJECT_ID: 1
 
 jobs:
   build:
@@ -26,7 +28,10 @@ jobs:
       - name: Code Build & Test
         id: build
         working-directory: ./nms
-        run: mvn clean package
+        run: |
+          echo "::set-output name=buildStartDate::$(date)"
+          mvn clean package
+          echo "::set-output name=buildEndDate::$(date)"
       - name: Uploading Dockerfile & war
         uses: actions/upload-artifact@v3
         with:
@@ -36,14 +41,25 @@ jobs:
             nms/target/nms*.war
           retention-days: 1
       - name: Setting Environment Variables
+        if: always()
         id: variables_adopt
         run: |
-          echo "::set-output name=num::nms.0.${{ github.run_number }}"
-      - name: Publish result
-        if: always()
-        run: |
-          echo "Status: ${{steps.build.outcome}}"
-          echo "Status2: ${{steps.build.conclusion}}"
+          echo "::set-output name=buildNumber::nms-gh.0.${{ github.run_number }}"
+          echo "::set-output name=buildURL::$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          startTime=$(date -d "${{ steps.build.outputs.buildStartDate }}" +%s)
+          endTime=$(date -d "${{ steps.end.outputs.buildEndDate }}" +%s)
+          diffSeconds=$(($endTime-$startTime))
+          diffTime=$(date -d @${diffSeconds} +"%H:%M:%S" -u)
+          echo "::set-output name=buildDuration::$diffTime"
+          echo "::set-output name=buildStatus::${{ steps.build.outcome == 'success' }}"
+      - name: Sending build feedback to ADOPT
+        if: always()          
+        uses: fjogeleit/http-request-action@v1
+        with:
+            url: "${{ env.ADOPT_SERVICES_URL }}/build"
+            method: 'POST'
+            contentType: application/json
+            data: '{ "buildDisplayName": "${{ steps.variables_adopt.outputs.buildNumber }}", "buildDuration": "${{ steps.variables_adopt.outputs.buildDuration }}", "buildStartDate": ${{ steps.build.outputs.buildStartDate }}, "buildStatus": ${{ steps.variables_adopt.outputs.buildStatus }}, "buildURL": "${{ steps.variables_adopt.outputs.buildStatus }}", "projectId": ${{ env.ADOPT_PROJECT_ID }} }'
           
   analysis:
     needs: build
