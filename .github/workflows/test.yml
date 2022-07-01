@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: build
-        run: echo a
+        run: exit 1
       
       - id: analysis
         run: echo "${{ toJson(steps.build) }}"
