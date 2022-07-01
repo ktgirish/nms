@@ -7,14 +7,14 @@ jobs:
   test_a:
     runs-on: ubuntu-latest
     steps:
-      - run: exit 1
+      - run: echo hi
       
   test_b:
     needs: test_a
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: echo hello
+      - run: echo "${{ fromJson(needs.test_a)}}"
       
   test_c:
     needs: [test_a,test_b]
