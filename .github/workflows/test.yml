@@ -7,31 +7,40 @@ jobs:
   test_a:
     runs-on: ubuntu-latest
     steps:
-      - run: exit 1
-      
-  test_b:
-    needs: test_a
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "${{ needs.test_a.result }}"
-      
-  test_c:
-    needs: [test_a,test_b]
-    runs-on: ubuntu-latest
-    steps:
+      - id: build
+        run: echo "::set-output name=startDate::$(date)"
+      - id: end
+        run: echo "::set-output name=endDate::$(date)"
       - run: |
-          echo b
-          echo ${{ needs.test_a.result }}
-          echo ${{ needs.test_b.result }}
+          startTime=$(date -d "${{ steps.build.outputs.startDate }}" +%s)
+          endTime=$(date -d "${{ steps.end.outputs.endDate }}" +%s)
+          diffSeconds=$(($endTime-$startTime))
+          diffTime=$(date -d @${diffSeconds} +"%H:%M:%S" -u)
+          echo $diffTime
       
-  test_d:
-    needs: [test_a,test_b,test_c]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo b
-          echo ${{ needs.test_a.result }}
-          echo ${{ needs.test_b.result }}
-          echo ${{ needs.test_c.result }}
+  #test_b:
+  #  needs: test_a
+  #  if: always()
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - run: echo "${{ needs.test_a.result }}"
+      
+  #test_c:
+  #  needs: [test_a,test_b]
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - run: |
+  #        echo b
+  #        echo ${{ needs.test_a.result }}
+  #        echo ${{ needs.test_b.result }}
+      
+  #test_d:
+  #  needs: [test_a,test_b,test_c]
+  #  if: always()
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - run: |
+  #        echo b
+  #        echo ${{ needs.test_a.result }}
+  #        echo ${{ needs.test_b.result }}
+  #        echo ${{ needs.test_c.result }}
