@@ -16,8 +16,8 @@ jobs:
       - if: always()
         run: |
           echo b
-          echo "${{ toJson(steps.build) }}"
-          echo "${{ toJson(steps.analysis) }}"
+          echo "${{ steps.build.outcome == 'success' }}"
+          echo "${{ steps.analysis.outcome == 'success' }}"
       
   #test_d:
   #  needs: [test_a,test_b,test_c]
