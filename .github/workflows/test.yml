@@ -14,7 +14,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ fromJson(needs.test_a)}}"
+      - run: echo "${{ toJson(needs.test_a)}}"
       
   test_c:
     needs: [test_a,test_b]
