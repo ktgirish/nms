@@ -7,7 +7,7 @@ jobs:
   test_a:
     runs-on: ubuntu-latest
     steps:
-      - run: echo hello
+      - run: exit 1
       
   test_b:
     needs: test_a
@@ -20,11 +20,17 @@ jobs:
     needs: [test_a,test_b]
     runs-on: ubuntu-latest
     steps:
-      - run: echo b
+      - run: |
+          echo b
+          echo ${{ fromJson(needs.test_a)}}
       
   test_d:
     needs: [test_a,test_b,test_c]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: echo b
+      - run: |
+          echo b
+          echo ${{ fromJson(needs.test_a)}}
+          echo ${{ fromJson(needs.test_b)}}
+          echo ${{ fromJson(needs.test_c)}}
