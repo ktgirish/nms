@@ -7,7 +7,7 @@ jobs:
   test_a:
     runs-on: ubuntu-latest
     steps:
-      - run: echo hi
+      - run: exit 1
       
   test_b:
     needs: test_a
