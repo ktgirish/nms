@@ -32,6 +32,6 @@ jobs:
     steps:
       - run: |
           echo b
-          echo ${{ needs.test_a.result )}}
+          echo ${{ needs.test_a.result }}
           echo ${{ needs.test_b.result }}
           echo ${{ needs.test_c.result }}
