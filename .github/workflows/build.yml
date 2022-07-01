@@ -61,7 +61,7 @@ jobs:
             url: "${{ env.ADOPT_SERVICES_URL }}/build"
             method: 'POST'
             customHeaders: '{"Content-Type": "application/json"}'
-            data: '{ "buildDisplayName": "${{ steps.variables_adopt.outputs.buildNumber }}", "buildDuration": "${{ steps.variables_adopt.outputs.buildDuration }}", "buildStartDate": ${{ steps.build.outputs.startTimeInMS }}, "buildStatus": ${{ steps.variables_adopt.outputs.buildStatus }}, "buildURL": "${{ steps.variables_adopt.outputs.buildURL }}", "projectId": ${{ env.ADOPT_PROJECT_ID }} }'
+            data: '{ "buildDisplayName": "${{ steps.variables_adopt.outputs.buildNumber }}", "buildDuration": "${{ steps.variables_adopt.outputs.buildDuration }}", "buildStartDate": ${{ steps.variables_adopt.outputs.startTimeInMS }}, "buildStatus": ${{ steps.variables_adopt.outputs.buildStatus }}, "buildURL": "${{ steps.variables_adopt.outputs.buildURL }}", "projectId": ${{ env.ADOPT_PROJECT_ID }} }'
           
   analysis:
     needs: build
