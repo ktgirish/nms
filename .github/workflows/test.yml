@@ -8,33 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: build
-        run: echo "::set-output name=startDate::$(date)"
-      - id: end
-        run: echo "::set-output name=endDate::$(date)"
-      - id: duration
-        run: |
-          startTime=$(date -d "${{ steps.build.outputs.startDate }}" +%s)
-          endTime=$(date -d "${{ steps.end.outputs.endDate }}" +%s)
-          diffSeconds=$(($endTime-$startTime+10))
-          diffTime=$(date -d @${diffSeconds} +"%H:%M:%S" -u)
-          echo "::set-output name=duration::$diffTime"
-      - run: echo ${{ steps.duration.outputs.duration }}
+        run: echo a
       
-  #test_b:
-  #  needs: test_a
-  #  if: always()
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - run: echo "${{ needs.test_a.result }}"
-      
-  #test_c:
-  #  needs: [test_a,test_b]
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - run: |
-  #        echo b
-  #        echo ${{ needs.test_a.result }}
-  #        echo ${{ needs.test_b.result }}
+      - id: analysis
+        run: echo "${{ toJson(steps.build) }}"
+
+      - run: |
+          echo b
+          echo "${{ toJson(steps.build) }}"
+          echo "${{ toJson(steps.analysis) }}"
       
   #test_d:
   #  needs: [test_a,test_b,test_c]
