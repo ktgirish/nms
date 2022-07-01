@@ -10,12 +10,17 @@ env:
   ACI_RESOURCE_GROUP: github-actions-aci
   ADOPT_SERVICES_URL: http://20.25.98.153:8888/adopt-services
   ADOPT_PROJECT_ID: 1
+  ADOPT_PROJECT_NAME: nmsapp
+  ADOPT_SONAR_KEY: com.nms:nms
+  ADOPT_MODULE_ID: 2
+  ADOPT_MODULE_NAME: nms
 
 jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      buildNumber: ${{ steps.variables_adopt.outputs.num }}
+      buildNumber: ${{ steps.variables_adopt.outputs.buildNumber }}
+      buildURL: ${{ steps.variables_adopt.outputs.buildURL }}
     steps:
       - name: Code Checkout
         uses: actions/checkout@v3
@@ -82,11 +87,13 @@ jobs:
         working-directory: ./nms
         run: mvn verify sonar:sonar -Dsonar.host.url=http://13.82.226.119:9000/sonar/ -Dsonar.login=${{secrets.SONAR_TOKEN_AZ}}
         #run: mvn verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io/ -Dsonar.organization=ktgirish -Dsonar.projectKey=nms-github-actions -Dsonar.login=${{secrets.SONAR_TOKEN}}
-      - name: Publish result
-        if: always()
-        run: |
-          echo "Status: ${{steps.analysis.outcome}}"
-          echo "Status2: ${{steps.analysis.conclusion}}"
+      - name: Sending code-analysis feedback to ADOPT
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "${{ env.ADOPT_SERVICES_URL }}/codeanalysis"
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{ "buildDisplayName": "${{ needs.build.outputs.buildNumber }}", "buildURL": "${{ needs.build.outputs.buildURL }}","projectId": ${{ env.ADOPT_PROJECT_ID }}, "sonarKey": "${{ env.ADOPT_SONAR_KEY }}" }'
           
   artifact_management:
     needs: [build, analysis]
@@ -124,6 +131,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Dev Deployment
+        id: deploy
         uses: Azure/aci-deploy@v1
         with:
           resource-group: ${{ env.ACI_RESOURCE_GROUP }}
@@ -132,3 +140,17 @@ jobs:
           name: nms-dev
           ports: 80
           location: 'east us'
+      - name: Setting Environment Variables
+        if: always()
+        id: variables_adopt_d
+        run: |
+          echo "::set-output name=deployedDate::$(date +'%Y-%m-%dT%H:%M:%S')"
+          echo "::set-output name=deploymentStatus::${{ steps.deploy.outcome == 'success'}}"          
+      - name: Sending dev-deployment feedback to ADOPT
+        if: always()
+        uses: fjogeleit/http-request-action@v1     
+        with:
+          url: "${{ env.ADOPT_SERVICES_URL }}/devdeployment/save"
+          method: 'POST'
+          contentType: application/json
+          data: '{"actionType": "deploy","buildNumber": "${{ needs.build.outputs.buildNumber }}","deployedDate": "${{ steps.variables_adopt_d.outputs.deployedDate }}","deploymentStatus": ${{ steps.variables_adopt_d.outputs.deploymentStatus }},"environment": "DEV","moduleId": ${{ env.ADOPT_MODULE_ID }},"moduleName": "${{ env.ADOPT_MODULE_NAME }}","projectName": "${{ env.ADOPT_PROJECT_NAME }}"}'
