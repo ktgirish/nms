@@ -14,7 +14,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ toJson(needs.test_a)}}"
+      - run: echo "${{ needs.test_a.result }}"
       
   test_c:
     needs: [test_a,test_b]
@@ -22,7 +22,8 @@ jobs:
     steps:
       - run: |
           echo b
-          echo ${{ fromJson(needs.test_a)}}
+          echo ${{ needs.test_a.result }}
+          echo ${{ needs.test_b.result }}
       
   test_d:
     needs: [test_a,test_b,test_c]
@@ -31,6 +32,6 @@ jobs:
     steps:
       - run: |
           echo b
-          echo ${{ fromJson(needs.test_a)}}
-          echo ${{ fromJson(needs.test_b)}}
-          echo ${{ fromJson(needs.test_c)}}
+          echo ${{ needs.test_a.result )}}
+          echo ${{ needs.test_b.result }}
+          echo ${{ needs.test_c.result }}
