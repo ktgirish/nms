@@ -11,12 +11,14 @@ jobs:
         run: echo "::set-output name=startDate::$(date)"
       - id: end
         run: echo "::set-output name=endDate::$(date)"
-      - run: |
+      - id: duration
+        run: |
           startTime=$(date -d "${{ steps.build.outputs.startDate }}" +%s)
           endTime=$(date -d "${{ steps.end.outputs.endDate }}" +%s)
-          diffSeconds=$(($endTime-$startTime))
+          diffSeconds=$(($endTime-$startTime+10))
           diffTime=$(date -d @${diffSeconds} +"%H:%M:%S" -u)
-          echo $diffTime
+          echo "::set-output name=duration::$diffTime"
+      - run: echo ${{ steps.duration.outputs.duration }}
       
   #test_b:
   #  needs: test_a
