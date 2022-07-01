@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  test_a:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
+      
+  test_b:
+    needs: test_a
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
+      
+  test_c:
+    needs: [test_a,test_b]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo b
+      
+  test_d:
+    needs: [test_a,test_b,test_c]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo b
