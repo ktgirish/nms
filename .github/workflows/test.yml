@@ -13,7 +13,8 @@ jobs:
       - id: analysis
         run: echo "${{ toJson(steps.build) }}"
 
-      - run: |
+      - if: always()
+        run: |
           echo b
           echo "${{ toJson(steps.build) }}"
           echo "${{ toJson(steps.analysis) }}"
