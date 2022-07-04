@@ -17,8 +17,10 @@ env:
   ACI_RESOURCE_GROUP: github-actions-aci
   ACI_NAME: nms
   ACI_LOCATION: 'east us'
-  
-#Respective projects to be added further to get the version number to release       
+  ADOPT_SERVICES_URL: http://20.25.98.153:8888/adopt-services
+  ADOPT_MODULE_ID: 2
+  ADOPT_MODULE_NAME: nms
+     
 jobs:
   setting_aci_dns_name:
     runs-on: ubuntu-latest
@@ -35,10 +37,21 @@ jobs:
             echo "Environment not defined"
             exit 1
           fi
+      - name: Setting Environment Variables for ADOPT
+        if: always()
+        id: variables_adopt
+        run: |
+          echo "::set-output name=deploymentBuildDisplayName::nms-${{ github.run_number }}"
+          echo "::set-output name=buildURL::$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo "::set-output name=deploymentStartDate::$(date +%s)"
     outputs:
       aci_dns_name: ${{ steps.dns_name.outputs.dns }}
       release_version: ${{ steps.dns_name.outputs.version }}
+      deployment_build_display_name: ${{ steps.variables_adopt.outputs.deploymentBuildDisplayName }}
+      build_url: ${{ steps.variables_adopt.outputs.buildURL }}
+      deployment_start_date: ${{ steps.variables_adopt.outputs.deploymentStartDate }}
 
+#Respective projects to be added further to get the version number to release    
   deploy_nms:
     needs: [setting_aci_dns_name]
     if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
@@ -56,3 +69,29 @@ jobs:
       image: ghcr.io/${{ github.repository }}
       image_tag: ${{ needs.setting_aci_dns_name.outputs.release_version }}
       port: 8080
+      
+  adopt_feedback:
+    needs: [setting_aci_dns_name, deploy_nms]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setting Environment Variables for ADOPT
+        if: always()
+        id: variables_adopt_d
+        run: |
+          startTime=${{ needs.variables_adopt.outputs.deployment_start_date }}
+          endTime=$($(date +%s))
+          diffSeconds=$(($endTime-$startTime))
+          diffTime=$(date -d @${diffSeconds} +"%H:%M:%S" -u)
+          deploymentTimeInMS=$(($endTime*1000))
+          echo "::set-output name=deploymentDuration::$diffTime"
+          echo "::set-output name=deploymentTimeInMS::$deploymentTimeInMS"
+          echo "::set-output name=deploymentStatus::${{ needs.deploy_nms.result == 'success' }}"
+      - name: Sending deployment feedback to ADOPT
+        if: always()
+        uses: fjogeleit/http-request-action@v1     
+        with:
+          url: "${{ env.ADOPT_SERVICES_URL }}/deployment"
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"buildURL": "${{ needs.setting_aci_dns_name.outputs.build_url }}","deployedEnvironment": "${{ inputs.environment}}","deploymentBuildDisplayName": "${{ needs.setting_aci_dns_name.outputs.deployment_build_display_name }}","deploymentDate": "${{ steps.variables_adopt_d.outputs.deploymentTimeInMS }}","deploymentDuration":"${{ steps.variables_adopt_d.outputs.deploymentDuration }}","deploymentStatus": ${{ steps.variables_adopt_d.outputs.deploymentStatus }},"moduleId": ${{ env.ADOPT_MODULE_ID }},"moduleName": "${{ env.ADOPT_MODULE_NAME }}","projectsWithbuildIds": "${{ fromJson(inputs.appsWithVersions) }}"}'

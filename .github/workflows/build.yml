@@ -138,7 +138,7 @@ jobs:
           dns-name-label: nms-dev
           image: ${{ env.REGISTRY }}/${{ github.repository }}:${{ needs.build.outputs.buildNumber }}
           name: nms-dev
-          ports: 80
+          ports: 8080
           location: 'east us'
       - name: Setting Environment Variables
         if: always()
@@ -152,5 +152,5 @@ jobs:
         with:
           url: "${{ env.ADOPT_SERVICES_URL }}/devdeployment/save"
           method: 'POST'
-          contentType: application/json
+          customHeaders: '{"Content-Type": "application/json"}'
           data: '{"actionType": "deploy","buildNumber": "${{ needs.build.outputs.buildNumber }}","deployedDate": "${{ steps.variables_adopt_d.outputs.deployedDate }}","deploymentStatus": ${{ steps.variables_adopt_d.outputs.deploymentStatus }},"environment": "DEV","moduleId": ${{ env.ADOPT_MODULE_ID }},"moduleName": "${{ env.ADOPT_MODULE_NAME }}","projectName": "${{ env.ADOPT_PROJECT_NAME }}"}'
