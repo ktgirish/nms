@@ -28,7 +28,7 @@ jobs:
       - name: Setting ACI DNS Name variable
         id: dns_name
         run: |
-          echo "::set-output name=version::${{ fromJson(inputs.appsWithVersions).nms }}"
+          echo "::set-output name=version::${{ fromJson(inputs.appsWithVersions).nmsapp }}"
           if [ ${{ inputs.environment}} == 'UAT' ]; then
             echo "::set-output name=dns::nms-uat"
           elif [ ${{ inputs.environment}} == 'SIT' ]; then
@@ -54,7 +54,7 @@ jobs:
 #Respective projects to be added further to get the version number to release    
   deploy_nms:
     needs: [setting_aci_dns_name]
-    if: "${{ fromJson(inputs.appsWithVersions).nms != '' }}"
+    if: "${{ fromJson(inputs.appsWithVersions).nmsapp != '' }}"
     uses: ./.github/workflows/deploy-to-aci.yml
     secrets:
       registry_password: ${{ secrets.GITHUB_TOKEN }}
