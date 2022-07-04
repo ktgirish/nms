@@ -80,7 +80,7 @@ jobs:
         id: variables_adopt_d
         run: |
           startTime=${{ needs.setting_aci_dns_name.outputs.deployment_start_date }}
-          endTime=$($(date +%s))
+          endTime=$(date +%s)
           diffSeconds=$(($endTime-$startTime))
           diffTime=$(date -d @${diffSeconds} +"%H:%M:%S" -u)
           deploymentTimeInMS=$(($endTime*1000))
@@ -94,4 +94,4 @@ jobs:
           url: "${{ env.ADOPT_SERVICES_URL }}/deployment"
           method: 'POST'
           customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"buildURL": "${{ needs.setting_aci_dns_name.outputs.build_url }}","deployedEnvironment": "${{ inputs.environment}}","deploymentBuildDisplayName": "${{ needs.setting_aci_dns_name.outputs.deployment_build_display_name }}","deploymentDate": "${{ steps.variables_adopt_d.outputs.deploymentTimeInMS }}","deploymentDuration":"${{ steps.variables_adopt_d.outputs.deploymentDuration }}","deploymentStatus": ${{ steps.variables_adopt_d.outputs.deploymentStatus }},"moduleId": ${{ env.ADOPT_MODULE_ID }},"moduleName": "${{ env.ADOPT_MODULE_NAME }}","projectsWithbuildIds": "${{ toJson(inputs.appsWithVersions) }}"}'
+          data: '{"buildURL": "${{ needs.setting_aci_dns_name.outputs.build_url }}","deployedEnvironment": "${{ inputs.environment}}","deploymentBuildDisplayName": "${{ needs.setting_aci_dns_name.outputs.deployment_build_display_name }}","deploymentDate": "${{ steps.variables_adopt_d.outputs.deploymentTimeInMS }}","deploymentDuration":"${{ steps.variables_adopt_d.outputs.deploymentDuration }}","deploymentStatus": ${{ steps.variables_adopt_d.outputs.deploymentStatus }},"moduleId": ${{ env.ADOPT_MODULE_ID }},"moduleName": "${{ env.ADOPT_MODULE_NAME }}","projectsWithbuildIds": ${{ toJson(inputs.appsWithVersions) }} }'
